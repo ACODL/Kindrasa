@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/app/components/header'
+import EditableListingDetails from '@/app/components/EditableListingDetails'
+import { House } from 'lucide-react'
 
 export default async function ListingPage({ params }: { params: Promise<{ id: string }> }) {
     const supabase = await createClient()
@@ -24,12 +26,6 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
     }
     const stage = stageColors[listing.pipeline_stage] ?? stageColors.closed
 
-    const formattedPrice = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-    }).format(listing.price)
-
     return (
         <div className="min-h-screen">
             <Header />
@@ -38,36 +34,22 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
                     ← Back to Listings
                 </Link>
 
-                <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '28px', marginTop: '20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-                        <div style={{ width: '52px', height: '52px', borderRadius: '10px', background: '#fef9ec', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>
-                            🏠
+                <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '24px', marginTop: '16px' }}>
+                    {/* Row 1: icon + badge */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                        <div style={{ width: '52px', height: '52px', borderRadius: '10px', background: '#fef9ec', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <House size={24} color="#8B6914" strokeWidth={1.5} />
                         </div>
-                        <div>
-                            <h2 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '22px', margin: '0 0 4px' }}>
-                                {listing.address}
-                            </h2>
-                            <p style={{ color: '#6B7280', fontSize: '13px', margin: 0 }}>
-                                Listed {new Date(listing.created_at).toLocaleDateString()}
-                            </p>
-                        </div>
-                        <span style={{ marginLeft: 'auto', fontSize: '11px', padding: '4px 12px', borderRadius: '20px', fontWeight: 500, background: stage.bg, color: stage.color }}>
+                        <span style={{ fontSize: '11px', padding: '4px 12px', borderRadius: '20px', fontWeight: 500, background: stage.bg, color: stage.color }}>
                             {stage.label}
                         </span>
                     </div>
 
-                    <div style={{ borderTop: '0.5px solid #ddd8ce', paddingTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                        <div>
-                            <p style={{ fontSize: '11px', color: '#6B7280', letterSpacing: '0.06em', textTransform: 'uppercase', margin: '0 0 4px' }}>Price</p>
-                            <p style={{ fontFamily: 'var(--font-playfair)', fontSize: '22px', color: '#2C4A2E', margin: 0 }}>{formattedPrice}</p>
-                        </div>
-                        <div>
-                            <p style={{ fontSize: '11px', color: '#6B7280', letterSpacing: '0.06em', textTransform: 'uppercase', margin: '0 0 4px' }}>Status</p>
-                            <p style={{ fontSize: '14px', color: '#1A1A1A', margin: 0, textTransform: 'capitalize' }}>{listing.status}</p>
-                        </div>
-                    </div>
+                    {/* Row 2: the editable details (name, price, status, edit button) */}
+                    <EditableListingDetails listing={listing} />
                 </div>
             </div>
         </div>
     )
+
 }

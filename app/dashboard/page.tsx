@@ -4,6 +4,7 @@ import Header from '@/app/components/header'
 import LeadCard from '@/app/components/LeadCard'
 import AddLeadForm from '@/app/components/AddLeadForm'
 import Link from 'next/link'
+import Greeting from '@/app/components/Greeting'
 
 
 export default async function DashboardPage() {
@@ -21,20 +22,11 @@ export default async function DashboardPage() {
     console.log('leads error:', leadsError)
     console.log('leads:', leads)
 
-    function getGreeting() {
-        const hour = new Date().getHours()
-        if (hour < 12) return 'Good morning'
-        if (hour < 17) return 'Good afternoon'
-        return 'Good evening'
-    }
-
     return (
         <div className="min-h-screen">
             <Header />
             <div className="max-w-4xl mx-auto p-8">
-                <h1 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '26px', marginBottom: '4px' }}>
-                    {getGreeting()}.
-                </h1>
+                <Greeting />
                 <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '28px' }}>
                     Here's what's happening with your clients today.
                 </p>

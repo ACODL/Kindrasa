@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Header from '@/app/components/header'
 import UpdatePipelineStage from '@/app/components/UpdatePipelineStage'
 import AddActivityForm from '@/app/components/AddActivityForm'
+import EditableLeadDetails from '@/app/components/EditableLeadDetails'
 
 export default async function LeadPage({ params }: { params: Promise<{ id: string }> }) {
     const supabase = await createClient()
@@ -45,14 +46,6 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
                         <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: '#e8f0e9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 500, color: '#2C4A2E', flexShrink: 0 }}>
                             {initials}
                         </div>
-                        <div>
-                            <h2 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '24px', margin: '0 0 4px', textTransform: 'capitalize' }}>
-                                {lead.first_name} {lead.last_name}
-                            </h2>
-                            <p style={{ color: '#6B7280', fontSize: '13px', margin: 0 }}>
-                                Added {new Date(lead.created_at).toLocaleDateString()}
-                            </p>
-                        </div>
                         <span style={{
                             marginLeft: 'auto',
                             fontSize: '11px',
@@ -69,21 +62,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
                             {lead.pipeline_stage}
                         </span>
                     </div>
-
-                    <div style={{ borderTop: '0.5px solid #ddd8ce', paddingTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                        {lead.email && (
-                            <div>
-                                <p style={{ fontSize: '11px', color: '#6B7280', letterSpacing: '0.06em', textTransform: 'uppercase', margin: '0 0 4px' }}>Email</p>
-                                <p style={{ fontSize: '14px', color: '#1A1A1A', margin: 0 }}>{lead.email}</p>
-                            </div>
-                        )}
-                        {lead.phone_number && (
-                            <div>
-                                <p style={{ fontSize: '11px', color: '#6B7280', letterSpacing: '0.06em', textTransform: 'uppercase', margin: '0 0 4px' }}>Phone</p>
-                                <p style={{ fontSize: '14px', color: '#1A1A1A', margin: 0 }}>{lead.phone_number}</p>
-                            </div>
-                        )}
-                    </div>
+                    <EditableLeadDetails lead={lead} />
                 </div>
 
                 <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '24px', marginTop: '16px' }}>
