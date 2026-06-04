@@ -1,18 +1,34 @@
 export default function ListingCard({ listing }: { listing: any }) {
-    return (
-        <div className="border rounded p-4 mb-4">
-            <h2 className="text-lg font-bold">{listing.address}</h2>
-            <p>Price: {listing.price}</p>
-            <p>Status: {listing.status}</p>
-            <span className={`px-2 py-1 rounded text-sm font-medium ${listing.pipeline_stage === 'prospecting' ? 'bg-blue-500 text-white' :
-                listing.pipeline_stage === 'listed' ? 'bg-yellow-500 text-white' :
-                    listing.pipeline_stage === 'under_contract' ? 'bg-green-500 text-white' :
-                        'bg-gray-500 text-white'
+    const stageColors: Record<string, { bg: string; color: string; label: string }> = {
+        prospecting: { bg: '#e0e7ff', color: '#3730a3', label: 'Prospecting' },
+        listed: { bg: '#d1fae5', color: '#065f46', label: 'Listed' },
+        under_contract: { bg: '#fef3c7', color: '#92400e', label: 'Under contract' },
+        closed: { bg: '#f3f4f6', color: '#374151', label: 'Closed' },
+    }
+    const stage = stageColors[listing.pipeline_stage] ?? stageColors.closed
 
-                }`}>
-                {listing.pipeline_stage}
+    const formattedPrice = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+    }).format(listing.price)
+
+    return (
+        <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '10px', padding: '16px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#fef9ec', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>
+                    🏠
+                </div>
+                <div>
+                    <p style={{ fontWeight: 500, fontSize: '14px', margin: '0 0 3px' }}>{listing.address}</p>
+                    <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>
+                        {formattedPrice} · <span style={{ textTransform: 'capitalize' }}>{listing.status}</span>
+                    </p>
+                </div>
+            </div>
+            <span style={{ fontSize: '11px', padding: '4px 10px', borderRadius: '20px', fontWeight: 500, background: stage.bg, color: stage.color }}>
+                {stage.label}
             </span>
-            <p>Created At: {new Date(listing.created_at).toLocaleString()}</p>
         </div>
     )
 }

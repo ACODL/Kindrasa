@@ -28,21 +28,29 @@ export default function UpdatePipelineStage({ lead }: { lead: any }) {
     }
     return (
         <div>
-            <h3 className="text-lg font-bold mb-2">Update Pipeline Stage</h3>
-            <select
-                value={pipelineStage}
-                onChange={(e) => setPipelineStage(e.target.value)}
-                className="border p-2 rounded"
-            >
-                <option value="new">New</option>
-                <option value="contacted">Contacted</option>
-                <option value="qualified">Qualified</option>
-                <option value="closed">Closed</option>
-            </select>
-            <button onClick={handlePipelineStageChange} disabled={isLoading} className="bg-blue-500 text-white p-2 rounded disabled:opacity-50">
-                {isLoading ? 'Updating...' : 'Update'}
-            </button>
-            {error && <p className="text-red-500">{error}</p>}
+            <h3 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '16px', marginBottom: '14px', color: '#1A1A1A' }}>
+                Update pipeline stage
+            </h3>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <select
+                    value={pipelineStage}
+                    onChange={(e) => setPipelineStage(e.target.value)}
+                    style={{ border: '0.5px solid #ddd8ce', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', background: '#F5F0E8', color: '#1A1A1A', cursor: 'pointer' }}
+                >
+                    <option value="new">New</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="qualified">Qualified</option>
+                    <option value="closed">Closed</option>
+                </select>
+                <button
+                    onClick={handlePipelineStageChange}
+                    disabled={isLoading}
+                    style={{ background: '#2C4A2E', color: '#F5F0E8', borderRadius: '8px', padding: '8px 18px', fontSize: '13px', border: 'none', cursor: 'pointer', opacity: isLoading ? 0.5 : 1 }}
+                >
+                    {isLoading ? 'Updating...' : 'Update'}
+                </button>
+            </div>
+            {error && <p style={{ color: '#dc2626', fontSize: '13px', marginTop: '8px' }}>{error}</p>}
         </div>
     )
 }   

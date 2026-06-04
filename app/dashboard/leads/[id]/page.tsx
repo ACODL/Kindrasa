@@ -22,37 +22,104 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
         .select('*')
         .eq('lead_id', id)
         .order('created_at', { ascending: false })
-    console.log('leads:', lead)
-    console.log('activities:', activities)
+
+    const initials = `${lead.first_name[0].toUpperCase()}${lead.last_name?.[0]?.toUpperCase() ?? ''}`
+
+    const activityTypeColors: Record<string, { bg: string; color: string; label: string }> = {
+        call: { bg: '#e0e7ff', color: '#3730a3', label: 'Call' },
+        text: { bg: '#d1fae5', color: '#065f46', label: 'Text' },
+        email: { bg: '#fef3c7', color: '#92400e', label: 'Email' },
+        note: { bg: '#f3f4f6', color: '#374151', label: 'Note' },
+    }
+
     return (
         <div className="min-h-screen">
             <Header />
-            <Link href="/dashboard" className="text-blue-500 hover:underline">← Back to Dashboard</Link>
-            <div className="mt-6 border rounded p-6">
-                <h2 className="text-2xl font-bold mb-4">{lead.first_name} {lead.last_name}</h2>
-                <p className="mb-2">Email: {lead.email}</p>
-                <p className="mb-2">Phone: {lead.phone_number}</p>
-                <p className="mb-2">Created: {new Date(lead.created_at).toLocaleString()}</p>
-                <span className={`px-2 py-1 rounded text-sm font-medium ${lead.pipeline_stage === 'new' ? 'bg-blue-500 text-white' :
-                    lead.pipeline_stage === 'contacted' ? 'bg-yellow-500 text-white' :
-                        lead.pipeline_stage === 'qualified' ? 'bg-green-500 text-white' :
-                            'bg-gray-500 text-white'
-                    }`}>
-                    {lead.pipeline_stage}
-                </span>
-            </div>
-            <UpdatePipelineStage lead={lead} />
-            <div className="mt-6">
-                <h3 className="text-xl font-bold mb-4">Activity History</h3>
-                {activities?.length === 0 && <p>No activities yet.</p>}
-                {activities?.map((activity) => (
-                    <div key={activity.activity_id} className="border rounded p-4 mb-4">
-                        <p>{activity.type}</p>
-                        <p>{activity.content}</p>
-                        <p className="text-gray-500 text-sm">{new Date(activity.created_at).toLocaleString()}</p>
+            <div className="max-w-4xl mx-auto p-8">
+                <Link href="/dashboard" style={{ color: '#2C4A2E', fontSize: '13px' }} className="hover:underline">
+                    ← Back to Dashboard
+                </Link>
+
+                <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '28px', marginTop: '20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+                        <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: '#e8f0e9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 500, color: '#2C4A2E', flexShrink: 0 }}>
+                            {initials}
+                        </div>
+                        <div>
+                            <h2 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '24px', margin: '0 0 4px', textTransform: 'capitalize' }}>
+                                {lead.first_name} {lead.last_name}
+                            </h2>
+                            <p style={{ color: '#6B7280', fontSize: '13px', margin: 0 }}>
+                                Added {new Date(lead.created_at).toLocaleDateString()}
+                            </p>
+                        </div>
+                        <span style={{
+                            marginLeft: 'auto',
+                            fontSize: '11px',
+                            padding: '4px 12px',
+                            borderRadius: '20px',
+                            fontWeight: 500,
+                            background: lead.pipeline_stage === 'new' ? '#e0e7ff' :
+                                lead.pipeline_stage === 'contacted' ? '#fef3c7' :
+                                    lead.pipeline_stage === 'qualified' ? '#d1fae5' : '#f3f4f6',
+                            color: lead.pipeline_stage === 'new' ? '#3730a3' :
+                                lead.pipeline_stage === 'contacted' ? '#92400e' :
+                                    lead.pipeline_stage === 'qualified' ? '#065f46' : '#374151'
+                        }}>
+                            {lead.pipeline_stage}
+                        </span>
                     </div>
-                ))}
-                <AddActivityForm leadId={lead.lead_id} />
+
+                    <div style={{ borderTop: '0.5px solid #ddd8ce', paddingTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        {lead.email && (
+                            <div>
+                                <p style={{ fontSize: '11px', color: '#6B7280', letterSpacing: '0.06em', textTransform: 'uppercase', margin: '0 0 4px' }}>Email</p>
+                                <p style={{ fontSize: '14px', color: '#1A1A1A', margin: 0 }}>{lead.email}</p>
+                            </div>
+                        )}
+                        {lead.phone_number && (
+                            <div>
+                                <p style={{ fontSize: '11px', color: '#6B7280', letterSpacing: '0.06em', textTransform: 'uppercase', margin: '0 0 4px' }}>Phone</p>
+                                <p style={{ fontSize: '14px', color: '#1A1A1A', margin: 0 }}>{lead.phone_number}</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '24px', marginTop: '16px' }}>
+                    <UpdatePipelineStage lead={lead} />
+                </div>
+
+                <div style={{ marginTop: '28px' }}>
+                    <h3 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '18px', marginBottom: '16px' }}>
+                        Activity history
+                    </h3>
+
+                    {activities?.length === 0 && (
+                        <p style={{ color: '#6B7280', fontSize: '13px' }}>No activities logged yet.</p>
+                    )}
+
+                    {activities?.map((activity) => {
+                        const typeStyle = activityTypeColors[activity.type] ?? activityTypeColors.note
+                        return (
+                            <div key={activity.activity_id} style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '10px', padding: '16px 18px', marginBottom: '10px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                    <span style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '20px', fontWeight: 500, background: typeStyle.bg, color: typeStyle.color }}>
+                                        {typeStyle.label}
+                                    </span>
+                                    <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>
+                                        {new Date(activity.created_at).toLocaleString()}
+                                    </p>
+                                </div>
+                                <p style={{ fontSize: '14px', color: '#1A1A1A', margin: 0 }}>{activity.content}</p>
+                            </div>
+                        )
+                    })}
+
+                    <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '24px', marginTop: '16px' }}>
+                        <AddActivityForm leadId={lead.lead_id} />
+                    </div>
+                </div>
             </div>
         </div>
     )

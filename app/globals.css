@@ -17,3 +17,28 @@ body {
   color: var(--foreground);
   font-family: var(--font-inter), Inter, sans-serif;
 }
+
+.nav-link {
+  position: relative;
+  text-decoration: none;
+  color: #b5c9b6;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #F5F0E8;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #F5F0E8;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}

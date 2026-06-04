@@ -1,4 +1,3 @@
-
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -16,26 +15,58 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
         .select('*')
         .eq('listing_id', id)
         .single()
-    console.log('listing:', listing)
+
+    const stageColors: Record<string, { bg: string; color: string; label: string }> = {
+        prospecting: { bg: '#e0e7ff', color: '#3730a3', label: 'Prospecting' },
+        listed: { bg: '#d1fae5', color: '#065f46', label: 'Listed' },
+        under_contract: { bg: '#fef3c7', color: '#92400e', label: 'Under contract' },
+        closed: { bg: '#f3f4f6', color: '#374151', label: 'Closed' },
+    }
+    const stage = stageColors[listing.pipeline_stage] ?? stageColors.closed
+
+    const formattedPrice = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+    }).format(listing.price)
+
     return (
         <div className="min-h-screen">
             <Header />
-            <Link href="/dashboard/listings" className="text-blue-500 hover:underline">← Back to Listings</Link>
-            <div className="mt-6 border rounded p-6">
-                <h2 className="text-2xl font-bold mb-4">{listing.address}</h2>
-                <p className="mb-2">Price: ${listing.price.toFixed(2)}</p>
-                <p className="mb-2">Status: {listing.status}</p>
-                <p className="mb-2">Created: {new Date(listing.created_at).toLocaleString()}</p>
-                <span className={`px-2 py-1 rounded text-sm font-medium ${listing.pipeline_stage === 'prospecting' ? 'bg-blue-500 text-white' :
-                    listing.pipeline_stage === 'listed' ? 'bg-yellow-500 text-white' :
-                        listing.pipeline_stage === 'under_contract' ? 'bg-green-500 text-white' : listing.pipeline_stage === 'closed' ? 'bg-red-500 text-white' :
-                            'bg-gray-500 text-white'
-                    }`}>
-                    {listing.pipeline_stage}
-                </span>
-            </div>
-            <div className="mt-6">
+            <div className="max-w-4xl mx-auto p-8">
+                <Link href="/dashboard/listings" style={{ color: '#2C4A2E', fontSize: '13px' }} className="hover:underline">
+                    ← Back to Listings
+                </Link>
 
+                <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '28px', marginTop: '20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+                        <div style={{ width: '52px', height: '52px', borderRadius: '10px', background: '#fef9ec', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>
+                            🏠
+                        </div>
+                        <div>
+                            <h2 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '22px', margin: '0 0 4px' }}>
+                                {listing.address}
+                            </h2>
+                            <p style={{ color: '#6B7280', fontSize: '13px', margin: 0 }}>
+                                Listed {new Date(listing.created_at).toLocaleDateString()}
+                            </p>
+                        </div>
+                        <span style={{ marginLeft: 'auto', fontSize: '11px', padding: '4px 12px', borderRadius: '20px', fontWeight: 500, background: stage.bg, color: stage.color }}>
+                            {stage.label}
+                        </span>
+                    </div>
+
+                    <div style={{ borderTop: '0.5px solid #ddd8ce', paddingTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div>
+                            <p style={{ fontSize: '11px', color: '#6B7280', letterSpacing: '0.06em', textTransform: 'uppercase', margin: '0 0 4px' }}>Price</p>
+                            <p style={{ fontFamily: 'var(--font-playfair)', fontSize: '22px', color: '#2C4A2E', margin: 0 }}>{formattedPrice}</p>
+                        </div>
+                        <div>
+                            <p style={{ fontSize: '11px', color: '#6B7280', letterSpacing: '0.06em', textTransform: 'uppercase', margin: '0 0 4px' }}>Status</p>
+                            <p style={{ fontSize: '14px', color: '#1A1A1A', margin: 0, textTransform: 'capitalize' }}>{listing.status}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     )

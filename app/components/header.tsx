@@ -20,14 +20,14 @@ export default function Header() {
 
             </Link>
             <nav className="flex gap-6">
-                <Link href="/dashboard" style={{ color: '#b5c9b6', fontSize: '13px', letterSpacing: '0.04em' }} className="hover:text-white transition-colors">
+                <Link href="/dashboard" className="nav-link text-sm tracking-wide">
                     Dashboard
                 </Link>
-                <Link href="/dashboard/listings" style={{ color: '#b5c9b6', fontSize: '13px', letterSpacing: '0.04em' }} className="hover:text-white transition-colors">
+                <Link href="/dashboard/listings" className="nav-link text-sm tracking-wide">
                     <span>Listings</span>
                 </Link>
             </nav>
-            <button className="px-4 py-2 rounded-md bg-transparent hover:text-white transition-colors" onClick={handleLogout} style={{ border: '0.5px solid #4a6e4c', color: '#b5c9b6', fontSize: '12px', letterSpacing: '0.04em' }} >
+            <button style={{ border: '0.5px solid #4a6e4c', color: '#b5c9b6', fontSize: '12px', letterSpacing: '0.04em' }} className="px-4 py-2 rounded-md bg-transparent hover:text-white transition-colors" onClick={handleLogout} >
                 logout
             </button>
         </header>

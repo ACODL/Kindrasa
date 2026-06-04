@@ -33,27 +33,37 @@ export default function AddActivityForm({ leadId }: { leadId: string }) {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="mt-4">
-            <select
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                className="border p-2 rounded"
-            >
-                <option value="call">Call</option>
-                <option value="email">Email</option>
-                <option value="note">Note</option>
-                <option value="text">Text</option>
-            </select>
-            <textarea
-                placeholder="Activity description"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="border p-2 rounded w-full"
-            />
-            <button type="submit" disabled={isLoading} className="bg-blue-500 text-white p-2 rounded mt-2 disabled:opacity-50">
-                {isLoading ? 'Adding...' : 'Add Activity'}
-            </button>
-            {error && <p className="text-red-500 mt-2">{error}</p>}
+        <form onSubmit={handleSubmit}>
+            <h3 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '16px', marginBottom: '14px', color: '#1A1A1A' }}>
+                Log activity
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <select
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                    style={{ border: '0.5px solid #ddd8ce', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', background: '#F5F0E8', color: '#1A1A1A', cursor: 'pointer' }}
+                >
+                    <option value="call">Call</option>
+                    <option value="email">Email</option>
+                    <option value="note">Note</option>
+                    <option value="text">Text</option>
+                </select>
+                <textarea
+                    placeholder="What happened?"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    rows={3}
+                    style={{ border: '0.5px solid #ddd8ce', borderRadius: '8px', padding: '10px 12px', fontSize: '13px', background: '#F5F0E8', color: '#1A1A1A', resize: 'none', width: '100%' }}
+                />
+                <button
+                    type="submit"
+                    disabled={isLoading}
+                    style={{ background: '#2C4A2E', color: '#F5F0E8', borderRadius: '8px', padding: '10px', fontSize: '13px', border: 'none', cursor: 'pointer', opacity: isLoading ? 0.5 : 1 }}
+                >
+                    {isLoading ? 'Logging...' : 'Log activity'}
+                </button>
+                {error && <p style={{ color: '#dc2626', fontSize: '13px' }}>{error}</p>}
+            </div>
         </form>
     )
 }

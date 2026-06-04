@@ -12,13 +12,21 @@ export default function AddListingForm() {
     const [isOpen, setIsOpen] = useState(false)
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
-    const [status, setStatus] = useState('')
-
-
-
+    const [status, setStatus] = useState('active')
+    const [isHovered, setIsHovered] = useState(false)
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
+
+        if (!address.trim()) {
+            setError('Address is required')
+            return
+        }
+        if (!price) {
+            setError('Price is required')
+            return
+        }
+
         setIsLoading(true)
         const { data: { user } } = await supabase.auth.getUser()
         const { error } = await supabase.from('listings').insert({
@@ -33,8 +41,8 @@ export default function AddListingForm() {
         } else {
             setAddress('')
             setPrice('')
-            setStatus('')
-            setPipelineStage('')
+            setStatus('active')
+            setPipelineStage('prospecting')
             setError('')
             router.refresh()
             setIsOpen(false)
@@ -42,53 +50,83 @@ export default function AddListingForm() {
         setIsLoading(false)
     }
 
+    const inputStyle = { border: '0.5px solid #ddd8ce', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', background: '#fff', width: '100%' }
+
     return (
-        <div>
-            <button onClick={() => setIsOpen(true)} className="bg-green-500 text-white p-2 rounded">
-                Add Listing
+        <>
+            <style>{`
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                .modal-overlay { animation: fadeIn 0.2s ease; }
+                .modal-card { animation: slideUp 0.25s ease; }
+            `}</style>
+            <button
+                onClick={() => setIsOpen(true)}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                style={{
+                    background: isHovered ? '#1e3320' : '#2C4A2E',
+                    color: '#F5F0E8',
+                    borderRadius: '8px',
+                    padding: '8px 16px',
+                    fontSize: '13px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s ease'
+                }}
+            >
+                + Add listing
             </button>
             {isOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded shadow-lg">
-                        <h2 className="text-xl font-bold mb-4">Add New Listing</h2>
-                        <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+                <div className="modal-overlay fixed inset-0 flex items-center justify-center" style={{ backdropFilter: 'blur(4px)', background: 'rgba(0,0,0,0.3)' }}>
+                    <div className="modal-card" style={{ background: '#F5F0E8', borderRadius: '12px', padding: '32px', width: '100%', maxWidth: '440px', border: '0.5px solid #ddd8ce' }}>
+                        <h2 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '22px', marginBottom: '20px', color: '#1A1A1A' }}>
+                            Add new listing
+                        </h2>
+                        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                             <input
                                 type="text"
-                                placeholder="Address"
+                                placeholder="Property address"
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
-                                className="border p-2 rounded"
+                                required
+                                style={inputStyle}
                             />
                             <input
                                 type="number"
                                 placeholder="Price"
                                 value={price}
                                 onChange={(e) => setPrice(e.target.value)}
-                                className="border p-2 rounded"
+                                required
+                                style={inputStyle}
                             />
-                            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                            <select value={status} onChange={(e) => setStatus(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
                                 <option value="active">Active</option>
                                 <option value="pending">Pending</option>
                                 <option value="sold">Sold</option>
                             </select>
-                            <select value={pipelineStage} onChange={(e) => setPipelineStage(e.target.value)}>
+                            <select value={pipelineStage} onChange={(e) => setPipelineStage(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
                                 <option value="prospecting">Prospecting</option>
                                 <option value="listed">Listed</option>
                                 <option value="under_contract">Under Contract</option>
                                 <option value="closed">Closed</option>
                             </select>
-
-                            <button type="submit" disabled={isLoading} className="bg-blue-500 text-white p-2 rounded disabled:opacity-50">
-                                {isLoading ? 'Adding...' : 'Add Listing'}
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                style={{ background: '#2C4A2E', color: '#F5F0E8' }}
+                                className="text-sm px-4 py-2.5 rounded-lg disabled:opacity-50 w-full mt-1"
+                            >
+                                {isLoading ? 'Adding...' : 'Add listing'}
                             </button>
-                            {error && <p className="text-red-500">{error}</p>}
+                            {error && <p style={{ color: '#dc2626', fontSize: '13px' }}>{error}</p>}
                         </form>
-                        <button onClick={() => setIsOpen(false)} className="mt-4 bg-gray-500 text-white p-2 rounded">
-                            Close
+                        <button onClick={() => setIsOpen(false)} style={{ color: '#6B7280', fontSize: '12px', marginTop: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>
+                            Cancel
                         </button>
                     </div>
                 </div>
             )}
-        </div>
+        </>
     )
 }
