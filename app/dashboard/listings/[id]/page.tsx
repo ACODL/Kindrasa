@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Header from '@/app/components/header'
 import EditableListingDetails from '@/app/components/EditableListingDetails'
 import { House } from 'lucide-react'
+import UpdateStatus from '@/app/components/UpdateStatus'
 
 export default async function ListingPage({ params }: { params: Promise<{ id: string }> }) {
     const supabase = await createClient()
@@ -47,6 +48,9 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
 
                     {/* Row 2: the editable details (name, price, status, edit button) */}
                     <EditableListingDetails listing={listing} />
+                </div>
+                <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '24px', marginTop: '16px' }}>
+                    <UpdateStatus listing={listing} />
                 </div>
             </div>
         </div>

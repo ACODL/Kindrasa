@@ -9,9 +9,9 @@ import UpdatePipelineStage from './UpdatePipelineStage'
 export default function EditableLeadDetails({ listing }: { listing: any }) {
     const supabase = createClient()
     const router = useRouter()
-    const [address, setAddress] = useState(listing.address)
-    const [price, setPrice] = useState(listing.price)
-    const [status, setStatus] = useState(listing.status)
+    const [address, setAddress] = useState(listing.address ?? '')
+    const [price, setPrice] = useState(listing.price ?? '')
+    const [status, setStatus] = useState(listing.status ?? '')
     const [error, setError] = useState('')
     const [isSaving, setIsSaving] = useState(false)
     const [isEditing, setIsEditing] = useState(false)
@@ -54,18 +54,15 @@ export default function EditableLeadDetails({ listing }: { listing: any }) {
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <input
                             value={address}
+                            placeholder="Address"
                             onChange={(e) => setAddress(e.target.value)}
                             style={{ border: '0.5px solid #ddd8ce', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', background: '#F5F0E8', color: '#1A1A1A', flex: 1 }}
                         />
                     </div>
                     <input
                         value={price}
+                        placeholder="Price"
                         onChange={(e) => setPrice(e.target.value)}
-                        style={{ border: '0.5px solid #ddd8ce', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', background: '#F5F0E8', color: '#1A1A1A' }}
-                    />
-                    <input
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
                         style={{ border: '0.5px solid #ddd8ce', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', background: '#F5F0E8', color: '#1A1A1A' }}
                     />
                     <div style={{ display: 'flex', gap: '10px' }}>

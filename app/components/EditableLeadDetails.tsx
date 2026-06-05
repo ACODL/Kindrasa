@@ -8,10 +8,10 @@ import UpdatePipelineStage from './UpdatePipelineStage'
 export default function EditableLeadDetails({ lead }: { lead: any }) {
     const supabase = createClient()
     const router = useRouter()
-    const [firstName, setFirstName] = useState(lead.first_name)
-    const [lastName, setLastName] = useState(lead.last_name)
-    const [email, setEmail] = useState(lead.email)
-    const [phone, setPhone] = useState(lead.phone_number)
+    const [firstName, setFirstName] = useState(lead.first_name ?? '')
+    const [lastName, setLastName] = useState(lead.last_name ?? '')
+    const [email, setEmail] = useState(lead.email ?? '')
+    const [phone, setPhone] = useState(lead.phone_number ?? '')
     const [error, setError] = useState('')
     const [isSaving, setIsSaving] = useState(false)
     const [isEditing, setIsEditing] = useState(false)
@@ -52,22 +52,26 @@ export default function EditableLeadDetails({ lead }: { lead: any }) {
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <input
                             value={firstName}
+                            placeholder="First name"
                             onChange={(e) => setFirstName(e.target.value)}
                             style={{ border: '0.5px solid #ddd8ce', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', background: '#F5F0E8', color: '#1A1A1A', flex: 1 }}
                         />
                         <input
                             value={lastName}
+                            placeholder="Last name"
                             onChange={(e) => setLastName(e.target.value)}
                             style={{ border: '0.5px solid #ddd8ce', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', background: '#F5F0E8', color: '#1A1A1A', flex: 1 }}
                         />
                     </div>
                     <input
                         value={email}
+                        placeholder="Email"
                         onChange={(e) => setEmail(e.target.value)}
                         style={{ border: '0.5px solid #ddd8ce', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', background: '#F5F0E8', color: '#1A1A1A' }}
                     />
                     <input
                         value={phone}
+                        placeholder="Phone number"
                         onChange={(e) => setPhone(e.target.value)}
                         style={{ border: '0.5px solid #ddd8ce', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', background: '#F5F0E8', color: '#1A1A1A' }}
                     />
