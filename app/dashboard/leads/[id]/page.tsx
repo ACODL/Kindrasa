@@ -5,6 +5,9 @@ import Header from '@/app/components/header'
 import UpdatePipelineStage from '@/app/components/UpdatePipelineStage'
 import AddActivityForm from '@/app/components/AddActivityForm'
 import EditableLeadDetails from '@/app/components/EditableLeadDetails'
+import DraftButton from '@/app/components/DraftButton'
+import DraftCard from '@/app/components/DraftCard'
+
 
 export default async function LeadPage({ params }: { params: Promise<{ id: string }> }) {
     const supabase = await createClient()
@@ -23,6 +26,12 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
         .select('*')
         .eq('lead_id', id)
         .order('created_at', { ascending: false })
+    const { data: drafts } = await supabase
+        .from('ai_drafts')
+        .select('*')
+        .eq('lead_id', id).eq('status', 'pending')
+        .order('created_at', { ascending: false })
+
 
     const initials = `${lead.first_name[0].toUpperCase()}${lead.last_name?.[0]?.toUpperCase() ?? ''}`
 
@@ -70,9 +79,14 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
                 </div>
 
                 <div style={{ marginTop: '28px' }}>
-                    <h3 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '18px', marginBottom: '16px' }}>
-                        Activity history
-                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <h3 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '18px', marginBottom: '16px' }}>
+                            Activity history
+                        </h3>
+                        <div style={{ marginLeft: 'auto' }}>
+                            <DraftButton leadId={lead.lead_id} />
+                        </div>
+                    </div>
 
                     {activities?.length === 0 && (
                         <p style={{ color: '#6B7280', fontSize: '13px' }}>No activities logged yet.</p>
@@ -97,6 +111,18 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
 
                     <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '24px', marginTop: '16px' }}>
                         <AddActivityForm leadId={lead.lead_id} />
+                    </div>
+                    <div>
+                        {drafts && drafts.length > 0 && (
+                            <div style={{ marginTop: '28px' }}>
+                                <h3 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '18px', marginBottom: '16px' }}>
+                                    Pending drafts
+                                </h3>
+                                {drafts.map((draft) => (
+                                    <DraftCard key={draft.draft_id} draft={draft} />
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
