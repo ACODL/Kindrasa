@@ -5,6 +5,7 @@ import LeadCard from '@/app/components/LeadCard'
 import AddLeadForm from '@/app/components/AddLeadForm'
 import Link from 'next/link'
 import Greeting from '@/app/components/Greeting'
+import ImportLeadForm from '@/app/components/ImportLeadForm'
 
 
 export default async function DashboardPage() {
@@ -30,9 +31,12 @@ export default async function DashboardPage() {
                 <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '28px' }}>
                     Here's what's happening with your clients today.
                 </p>
-                <div className="flex justify-between items-center mb-4">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                     <h2 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '18px' }}>Your clients</h2>
-                    <AddLeadForm />
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <AddLeadForm />
+                        <ImportLeadForm />
+                    </div>
                 </div>
 
                 {leads?.map((lead) => (
@@ -43,7 +47,7 @@ export default async function DashboardPage() {
                     </Link>
                 ))}
             </div>
-        </div>
+        </div >
 
 
     )
