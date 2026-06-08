@@ -5,6 +5,7 @@ import Header from '@/app/components/header'
 import EditableListingDetails from '@/app/components/EditableListingDetails'
 import { House } from 'lucide-react'
 import UpdateStatus from '@/app/components/UpdateStatus'
+import UpdatePipelineStage from '@/app/components/UpdatePipelineStage(listing)'
 
 export default async function ListingPage({ params }: { params: Promise<{ id: string }> }) {
     const supabase = await createClient()
@@ -51,6 +52,9 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
                 </div>
                 <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '24px', marginTop: '16px' }}>
                     <UpdateStatus listing={listing} />
+                </div>
+                <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '24px', marginTop: '16px' }}>
+                    <UpdatePipelineStage listing={listing} />
                 </div>
             </div>
         </div>

@@ -6,6 +6,8 @@ import AddLeadForm from '@/app/components/AddLeadForm'
 import Link from 'next/link'
 import Greeting from '@/app/components/Greeting'
 import ImportLeadForm from '@/app/components/ImportLeadForm'
+import { Suspense } from 'react'
+import GmailConnectedBanner from '@/app/components/GmailConnectedBanner'
 
 
 export default async function DashboardPage() {
@@ -27,6 +29,9 @@ export default async function DashboardPage() {
         <div className="min-h-screen">
             <Header />
             <div className="max-w-4xl mx-auto p-8">
+                <Suspense fallback={null}>
+                    <GmailConnectedBanner />
+                </Suspense>
                 <Greeting />
                 <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '28px' }}>
                     Here's what's happening with your clients today.
