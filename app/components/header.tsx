@@ -5,12 +5,15 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 
+
 export default function Header() {
     const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const [userEmail, setUserEmail] = useState('')
     const [agentId, setAgentId] = useState('')
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const [gmailConnected, setGmailConnected] = useState(false)
+    const [connectedEmail, setConnectedEmail] = useState('')
 
     // fetch the current user once when the header mounts
     useEffect(() => {
@@ -23,6 +26,18 @@ export default function Header() {
             }
         }
         loadUser()
+    }, [])
+
+    useEffect(() => {
+        async function loadStatus() {
+            const res = await fetch('/api/email-status')
+            const data = await res.json()
+            if (data.connected) {
+                setGmailConnected(true)
+                setConnectedEmail(data.email_address)
+            }
+        }
+        loadStatus()
     }, [])
 
     // close the dropdown when clicking outside it
@@ -90,12 +105,19 @@ export default function Header() {
                             <p style={{ fontSize: '13px', color: '#1A1A1A', margin: '2px 0 0', fontWeight: 500 }}>{userEmail}</p>
                         </div>
 
-                        <button
-                            onClick={handleConnectGmail}
-                            style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: '#1A1A1A', borderRadius: '6px' }}
-                        >
-                            Connect Gmail
-                        </button>
+                        {gmailConnected ? (
+                            <div style={{ padding: '8px 12px', fontSize: '13px', color: '#065f46' }}>
+                                ✓ Gmail connected
+                                <p style={{ fontSize: '11px', color: '#6B7280', margin: '2px 0 0' }}>{connectedEmail}</p>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={handleConnectGmail}
+                                style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: '#1A1A1A', borderRadius: '6px' }}
+                            >
+                                Connect Gmail
+                            </button>
+                        )}
 
                         <button
                             onClick={handleLogout}

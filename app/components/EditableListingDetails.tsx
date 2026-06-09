@@ -3,7 +3,6 @@
 import { createClient } from '@/lib/supabase/client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import UpdatePipelineStage from './UpdatePipelineStage(lead)'
 
 
 export default function EditableLeadDetails({ listing }: { listing: any }) {
