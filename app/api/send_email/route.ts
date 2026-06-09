@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const response = await fetch(`${process.env.FASTAPI_URL}/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ agent_id: user.id, to_email: , subject: , body: }),
+        body: JSON.stringify({ agent_id: user.id }),
     })
 
     const data = await response.json()
