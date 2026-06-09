@@ -30,7 +30,7 @@ export default function Header() {
 
     useEffect(() => {
         async function loadStatus() {
-            const res = await fetch('/api/email-status')
+            const res = await fetch('/api/email_status')
             const data = await res.json()
             if (data.connected) {
                 setGmailConnected(true)
