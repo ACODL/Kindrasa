@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 
+
 export default function Greeting() {
     const [greeting, setGreeting] = useState('')
 
@@ -13,7 +14,7 @@ export default function Greeting() {
 
     return (
         <h1 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '26px', marginBottom: '4px' }}>
-            {greeting || 'Welcome'}.
+            {greeting || 'Welcome'}, .
         </h1>
     )
 }
