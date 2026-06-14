@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from "@/lib/supabase/client"
 
 
 
@@ -9,6 +11,22 @@ export default function ContactImport() {
     const [isUploading, setIsUploading] = useState(false)
     const [error, setError] = useState('')
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const router = useRouter()
+    const [pendingContacts, setPendingContacts] = useState<any[]>([])
+
+    async function loadPendingContacts() {
+        const supabase = createClient()
+        const { data } = await supabase
+            .from('pending_contacts')
+            .select('*')
+            .eq('status', 'pending')
+            .order('created_at', { ascending: false })
+        setPendingContacts(data ?? [])
+    }
+
+    useEffect(() => {
+        loadPendingContacts()
+    }, [])
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0]
@@ -38,11 +56,47 @@ export default function ContactImport() {
             }
             const data = await res.json()
             console.log('parsed:', data)
-            // we'll show the review list next
+            await loadPendingContacts()
         } catch (err) {
             setError('Could not upload file. Try again.')
         } finally {
             setIsUploading(false)
+        }
+    }
+
+    async function handleAccept(pendingId: string) {
+        setError('')
+        try {
+            const res = await fetch('/api/parse-vcard', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pending_id: pendingId }),
+            })
+            const data = await res.json()
+            if (!res.ok) {
+                throw new Error('Failed to accept')
+            }
+            await loadPendingContacts()
+        } catch (err: any) {
+            setError(err.message)
+
+        }
+    }
+
+    async function handleReject(pendingId: string) {
+        setError('')
+        try {
+            const supabase = createClient()
+            const { error } = await supabase
+                .from('pending_contacts')
+                .update({ status: 'rejected' })
+                .eq('pending_id', pendingId)
+            if (error) {
+                throw new Error(error.message)
+            }
+            await loadPendingContacts()  // refresh
+        } catch (err: any) {
+            setError(err.message)
         }
     }
 
@@ -90,6 +144,42 @@ export default function ContactImport() {
 
 
             {error && <p style={{ color: '#dc2626', fontSize: '13px', marginTop: '12px' }}>{error}</p>}
+
+            <>
+                {pendingContacts.length > 0 && (
+                    <div style={{ maxWidth: '500px', marginTop: '24px' }}>
+                        <h3 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '18px', marginBottom: '16px' }}>
+                            Review contacts ({pendingContacts.length})
+                        </h3>
+                        {pendingContacts.map((contact) => (
+                            <div key={contact.pending_id} style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '10px', padding: '14px 16px', marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div>
+                                    <p style={{ fontSize: '14px', color: '#1A1A1A', margin: '0 0 2px', fontWeight: 500 }}>
+                                        {contact.name}
+                                    </p>
+                                    <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>
+                                        {contact.phone || 'No phone'}{contact.birthday ? ` · 🎂 ${contact.birthday}` : ''}
+                                    </p>
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button
+                                        onClick={() => handleAccept(contact.pending_id)}
+                                        style={{ background: '#2C4A2E', color: '#F5F0E8', borderRadius: '8px', padding: '6px 14px', fontSize: '12px', border: 'none', cursor: 'pointer' }}
+                                    >
+                                        Accept
+                                    </button>
+                                    <button
+                                        onClick={() => handleReject(contact.pending_id)}
+                                        style={{ background: '#fff', color: '#B43E3E', borderRadius: '8px', padding: '6px 14px', fontSize: '12px', border: '0.5px solid #B43E3E', cursor: 'pointer' }}
+                                    >
+                                        Reject
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </>
         </div>
     )
 }

@@ -9,6 +9,7 @@ export default async function ImportPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
 
+
     return (
         <div className="min-h-screen">
             <Header />
