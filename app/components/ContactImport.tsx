@@ -13,6 +13,8 @@ export default function ContactImport() {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const router = useRouter()
     const [pendingContacts, setPendingContacts] = useState<any[]>([])
+    const [currentPage, setCurrentPage] = useState(1)
+    const [pageSize, setPageSize] = useState(25)
 
     async function loadPendingContacts() {
         const supabase = createClient()
@@ -36,6 +38,13 @@ export default function ContactImport() {
         }
     }
 
+    useEffect(() => {
+        const newTotal = Math.ceil(pendingContacts.length / pageSize)
+        if (currentPage > newTotal && newTotal > 0) {
+            setCurrentPage(newTotal)
+        }
+    }, [pendingContacts, pageSize, currentPage])
+
     async function handleUpload() {
         if (!selectedFile) {
             setError('Please choose a file first')
@@ -47,7 +56,7 @@ export default function ContactImport() {
             const formData = new FormData()
             formData.append('file', selectedFile)
 
-            const res = await fetch('/api/parse-vcard', {
+            const res = await fetch('/api/parse_vcard', {
                 method: 'POST',
                 body: formData,
             })
@@ -67,7 +76,7 @@ export default function ContactImport() {
     async function handleAccept(pendingId: string) {
         setError('')
         try {
-            const res = await fetch('/api/parse-vcard', {
+            const res = await fetch('/api/accept-contact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ pending_id: pendingId }),
@@ -100,8 +109,12 @@ export default function ContactImport() {
         }
     }
 
+    const totalPages = Math.ceil(pendingContacts.length / pageSize)
+    const startIndex = (currentPage - 1) * pageSize
+    const visibleContacts = pendingContacts.slice(startIndex, startIndex + pageSize)
+
     return (
-        <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '28px', maxWidth: '500px' }}>
+        <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '28px', maxWidth: '900px' }}>
             <h2 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '20px', marginBottom: '8px' }}>
                 Import contacts
             </h2>
@@ -147,11 +160,48 @@ export default function ContactImport() {
 
             <>
                 {pendingContacts.length > 0 && (
-                    <div style={{ maxWidth: '500px', marginTop: '24px' }}>
+                    <div style={{ marginTop: '24px' }}>
                         <h3 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '18px', marginBottom: '16px' }}>
                             Review contacts ({pendingContacts.length})
                         </h3>
-                        {pendingContacts.map((contact) => (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+                            {/* page size dropdown */}
+                            <label style={{ fontSize: '13px', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                Show
+                                <select
+                                    value={pageSize}
+                                    onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1) }}
+                                    style={{ border: '0.5px solid #ddd8ce', borderRadius: '6px', padding: '4px 8px', fontSize: '13px', background: '#F5F0E8' }}
+                                >
+                                    <option value={10}>10</option>
+                                    <option value={25}>25</option>
+                                    <option value={50}>50</option>
+                                </select>
+                                per page
+                            </label>
+
+                            {/* prev / next */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto' }}>
+                                <button
+                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                    style={{ background: 'none', border: '0.5px solid #ddd8ce', borderRadius: '6px', padding: '4px 10px', fontSize: '13px', cursor: 'pointer', opacity: currentPage === 1 ? 0.4 : 1 }}
+                                >
+                                    ← Prev
+                                </button>
+                                <span style={{ fontSize: '13px', color: '#6B7280' }}>
+                                    Page {currentPage} of {totalPages}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages}
+                                    style={{ background: 'none', border: '0.5px solid #ddd8ce', borderRadius: '6px', padding: '4px 10px', fontSize: '13px', cursor: 'pointer', opacity: currentPage === totalPages ? 0.4 : 1 }}
+                                >
+                                    Next →
+                                </button>
+                            </div>
+                        </div>
+                        {visibleContacts.map((contact) => (
                             <div key={contact.pending_id} style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '10px', padding: '14px 16px', marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <div>
                                     <p style={{ fontSize: '14px', color: '#1A1A1A', margin: '0 0 2px', fontWeight: 500 }}>

@@ -2,10 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Header from '@/app/components/header'
 import LeadCard from '@/app/components/LeadCard'
-import AddLeadForm from '@/app/components/AddLeadForm'
 import Link from 'next/link'
 import Greeting from '@/app/components/Greeting'
-import ImportLeadForm from '@/app/components/ImportLeadForm'
+import ImportMenu from '@/app/components/ImportMenu'
 import { Suspense } from 'react'
 import GmailConnectedBanner from '@/app/components/GmailConnectedBanner'
 
@@ -25,6 +24,12 @@ export default async function DashboardPage() {
     console.log('leads error:', leadsError)
     console.log('leads:', leads)
 
+    const { data: agent } = await supabase
+        .from('agents')
+        .select('display_name')
+        .eq('userid', user.id)
+        .single()
+
     return (
         <div className="min-h-screen">
             <Header />
@@ -32,15 +37,14 @@ export default async function DashboardPage() {
                 <Suspense fallback={null}>
                     <GmailConnectedBanner />
                 </Suspense>
-                <Greeting />
+                <Greeting name={agent?.display_name ?? ''} />
                 <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '28px' }}>
                     Here's what's happening with your clients today.
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                     <h2 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '18px' }}>Your clients</h2>
                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <AddLeadForm />
-                        <ImportLeadForm />
+                        <ImportMenu />
                     </div>
                 </div>
 

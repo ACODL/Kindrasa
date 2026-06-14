@@ -2,8 +2,9 @@
 import { useState, useEffect } from 'react'
 
 
-export default function Greeting() {
+export default function Greeting({ name }: { name?: string }) {
     const [greeting, setGreeting] = useState('')
+    const firstName = name ? name.split(' ')[0] : ''
 
     useEffect(() => {
         const hour = new Date().getHours()
@@ -14,7 +15,7 @@ export default function Greeting() {
 
     return (
         <h1 style={{ fontFamily: 'var(--font-playfair)', fontWeight: 400, fontSize: '26px', marginBottom: '4px' }}>
-            {greeting || 'Welcome'}, .
+            {greeting}{firstName ? `, ${firstName}` : ''}.
         </h1>
     )
 }
