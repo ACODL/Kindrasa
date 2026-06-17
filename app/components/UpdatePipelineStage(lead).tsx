@@ -19,9 +19,23 @@ export default function UpdatePipelineStage({ lead }: { lead: any }) {
         const { error } = await supabase.from('leads').update({
             pipeline_stage: pipelineStage
         }).eq('lead_id', lead.lead_id).eq('agent_id', user?.id)
+
         if (error) {
             setError(error.message)
         } else {
+            // log a contact activity only when moving forward into contacted/qualified
+            const contactStages = ['contacted', 'qualified']
+            const movedIntoContact =
+                contactStages.includes(pipelineStage) && pipelineStage !== lead.pipeline_stage
+
+            if (movedIntoContact) {
+                await supabase.from('lead_activities').insert({
+                    lead_id: lead.lead_id,
+                    performing_agent: user?.id,
+                    type: 'contact',
+                    content: `Moved to ${pipelineStage}`,
+                })
+            }
             router.refresh()
         }
         setIsLoading(false)
