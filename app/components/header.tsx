@@ -76,6 +76,7 @@ export default function Header() {
             <nav className="flex gap-6">
                 <Link href="/dashboard" className="nav-link text-sm tracking-wide">Dashboard</Link>
                 <Link href="/dashboard/listings" className="nav-link text-sm tracking-wide">Listings</Link>
+                <Link href="/dashboard/transactions" className="nav-link text-sm tracking-wide">Transactions</Link>
             </nav>
 
             {/* profile dropdown */}

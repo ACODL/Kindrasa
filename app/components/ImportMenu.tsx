@@ -52,7 +52,7 @@ export default function ImportMenu() {
                     <div className="dropdown-menu" style={{ position: 'absolute', right: 0, top: '42px', background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '10px', padding: '6px', minWidth: '200px', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', zIndex: 40 }}>
                         <button onClick={() => chooseOption('addLead')} style={menuItemStyle}>Add new client</button>
                         <button onClick={() => chooseOption('importEmail')} style={menuItemStyle}>Import from email</button>
-                        <button onClick={() => chooseOption('importContacts')} style={menuItemStyle}>Import from contacts</button>
+                        <button onClick={() => chooseOption('importContacts')} style={menuItemStyle}>Import from contacts/spreadsheet</button>
                     </div>
                 )}
             </div>
