@@ -7,6 +7,7 @@ import AddActivityForm from '@/app/components/AddActivityForm'
 import EditableLeadDetails from '@/app/components/EditableLeadDetails'
 import DraftButton from '@/app/components/DraftButton'
 import DraftCard from '@/app/components/DraftCard'
+import TransactionSection from '@/app/components/TransactionSection'
 
 
 export default async function LeadPage({ params }: { params: Promise<{ id: string }> }) {
@@ -31,6 +32,14 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
         .select('*')
         .eq('lead_id', id).eq('status', 'pending')
         .order('created_at', { ascending: false })
+
+    const { data: transaction } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('lead_id', lead.lead_id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
 
 
     const initials = `${lead.first_name[0].toUpperCase()}${lead.last_name?.[0]?.toUpperCase() ?? ''}`
@@ -76,6 +85,10 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
 
                 <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '24px', marginTop: '16px' }}>
                     <UpdatePipelineStage lead={lead} />
+                </div>
+
+                <div style={{ background: '#fff', border: '0.5px solid #ddd8ce', borderRadius: '12px', padding: '24px', marginTop: '16px' }}>
+                    <TransactionSection lead={lead} transaction={transaction} />
                 </div>
 
                 <div style={{ marginTop: '28px' }}>
